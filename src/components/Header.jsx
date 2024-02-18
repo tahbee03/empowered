@@ -10,16 +10,16 @@ const Header = () => {
     <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
       <div className="flex items-center">
         <Link href={"/"} className="text-xl font-bold mr-6">Empowered</Link>
-        <Link href={"/resume"} className="text-gray-300 hover:text-white mr-4">ResumeBuilder</Link>
+        <Link href={"/resume"} className="text-gray-300 hover:text-white mr-4">Resume Builder</Link>
       </div>
       <div>
         {session ? (
           <>
             <span className="mr-4">Welcome, {session.user.name}</span>
             <Link href={"/"}>
-            <button onClick={() => signOut()} className="text-gray-300 hover:text-white mr-4">
-              Logout
-            </button>
+              <button onClick={() => signOut()} className="text-gray-300 hover:text-white mr-4">
+                Logout
+              </button>
             </Link>
           </>
         ) : (
