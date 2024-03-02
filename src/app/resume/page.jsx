@@ -4,11 +4,11 @@ import React from 'react'
 import { useChat } from 'ai/react'
 import { useEffect, useRef } from 'react'
 
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import CopyToClipboard from '@/components/copy-to-clipboard'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Input } from '../../components/ui/input'
+import { Button } from '../../components/ui/button'
+import { ScrollArea } from '../../components/ui/scroll-area'
+import CopyToClipboard from '../../components/copy-to-clipboard'
+import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar'
 
 import { SendHorizontalIcon } from 'lucide-react'
 
@@ -20,7 +20,7 @@ export default function Page() {
         {
           id: Date.now().toString(),
           role: 'assistant',
-          content: 'Welcome to AI Resume Builder Questionnaire! Let\'s get started. What is your first and last name?',
+          content: 'Welcome to AI Resume Builder Questionare! I will ask you your name,phone,email,education,experience, and skills. Let\'s get started. Tell me your first and last name ',
         }
       ]
     })
