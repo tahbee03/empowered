@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useChat } from 'ai/react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef,useState } from 'react'
 
 import { Input } from '../../components/ui/input'
 import { Button } from '../../components/ui/button'
@@ -13,22 +13,67 @@ import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar'
 import { SendHorizontalIcon } from 'lucide-react'
 
 export default function Page() {
+  const [finalResumeText, setFinalResumeText] = useState(''); // State to store the final resume text
+  console.log(finalResumeText)
   const ref = useRef(null)
   const { messages, input, handleInputChange, handleSubmit, isLoading, error } =
-    useChat({
-      initialMessages: [
-        {
-          id: Date.now().toString(),
-          role: 'assistant',
-          content: 'Welcome to AI Resume Builder Questionare! I will ask you your name,phone,email,education,experience, and skills. Let\'s get started. Tell me your first and last name ',
-        }
-      ]
-    })
+  useChat({
+    initialMessages: [
+      {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `I Want you to ask resume questions in this order in this form of an example object exactly with their information filled in
+        let resume = {
+          name: "",
+          phone: "",
+          email: "",
+          education: {
+              school: "",
+              gpa: "",
+              degree: "",
+              start_date: "",
+              end_date: ""
+          },
+          work_experience: {
+              job_title: "",
+              company: "",
+              responsibilities: "",
+              start_date: "",
+              end_date: ""
+          },
+          skills: [""]
+      };
+        
+        once your done collecting information  return the object. if the user needs help with anything help them. if they forgot to answer anything make sure
+        to go back and get everything. What is your first and last name?
+       
+        
+        `
+      },
+     
+     
+    ]
+  });
+  
+  const isFinalResponse = (response) => {
+    // Define keywords or phrases that likely indicate the final response
+    const indicators = ["Here is", "completed", ];
+    return indicators.some(indicator => response.includes(indicator));
+  };
 
   useEffect(() => {
     if (ref.current === null){ 
       ref.current.scrollTo(0, ref.current.scrollHeight);}
     // ref.current.scrollTop = ref.current.scrollHeight
+    const latestMessage = messages[messages.length - 1];
+    if (latestMessage && latestMessage.role === 'assistant' && isFinalResponse(latestMessage.content)) {
+      // Extract the resume text for parsing
+      setFinalResumeText(latestMessage.content);
+      // Here, you would call a function to safely parse `finalResumeText` into an object
+      // and then update `resumeData` state with it.
+      // This step is not shown here due to the complexity and security implications of parsing.
+      
+    }
   }, [messages])
 
   return (
@@ -74,15 +119,19 @@ export default function Page() {
                         <CopyToClipboard message={m} className='-mt-1' />
                       </div>
                       <div className='mt-2 text-sm text-zinc-500'>
-                        {m.content}
-                      </div>
+            {
+              // Check if the message contains the detailed instructions and extract the question part
+              m.content.includes("What is your first and last name?") ?
+              "What is your first and last name?" : m.content
+            }
+            </div>
                     </div>
                   </div>
                 )}
               </div>
             ))}
           </ScrollArea>
-
+                                                                                  
           <form onSubmit={handleSubmit} className='relative'>
             <Input
               value={input}
@@ -106,5 +155,7 @@ export default function Page() {
   )
 }
 
+
+ 
 
  
