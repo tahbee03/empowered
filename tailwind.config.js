@@ -7,6 +7,7 @@ module.exports = {
     './app/**/*.{js,jsx}',
     './src/**/*.{js,jsx}',
   ],
+  darkmode: 'class',
   prefix: "",
   theme: {
     container: {
@@ -17,6 +18,10 @@ module.exports = {
       },
     },
     extend: {
+      colors: {
+        "dark": "#232A3C",
+        "medium": "#293245"
+      },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
