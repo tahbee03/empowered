@@ -3,4 +3,4 @@
 Contributors: [Haseeb Chaudhury](https://github.com/Haseebzz), [Sri Tarun Gulumuru](https://github.com/sritarung), [Talike Bennett](https://github.com/tahbee03)
 
 ## Description
-...
+This is a web-based app to empower students with disabilities to explore their unique strengths and chart their personal journeys to success. Through interactive profiles, data input, and insightful analysis, our app helps users gain a deeper understanding of their abilities and areas for growth. It's a comprehensive toolkit that fosters self-discovery, skill development, and the creation of impactful resumes, ultimately enhancing opportunities for personal and professional success.
