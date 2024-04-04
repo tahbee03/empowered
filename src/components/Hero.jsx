@@ -1,7 +1,13 @@
+"use client"
+
 import React from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 
 const Hero = () => {
+  const { data: session } = useSession();
+
   return (
     <div className='w-full bg-white py-16 px-4 shadow-md dark:bg-medium'>
       <div className='max-w-[1240px] mx-auto grid md:grid-cols-2'>
@@ -13,10 +19,10 @@ const Hero = () => {
             Create a resume that highlights your achievements and showcases your potential,
             all with the ease and precision of artificial intelligence.
           </p>
-          <button className='text-[#501616] dark:text-[#CCA677] border border-[#501616] dark:border-[#CCA677] hover:bg-[#501616] dark:hover:bg-[#CCA677] hover:text-white dark:hover:text-black px-4 py-2 rounded-full my-2 w-full'>Get Started</button>
+          <Link href={(session) ? "/profile" : "/login"} className='text-[#501616] dark:text-[#CCA677] border border-[#501616] dark:border-[#CCA677] hover:bg-[#501616] dark:hover:bg-[#CCA677] hover:text-white dark:hover:text-black px-4 py-2 rounded-full my-2 w-full text-center'>Get Started</Link>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

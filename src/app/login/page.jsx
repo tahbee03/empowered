@@ -51,7 +51,7 @@ export default function LoginForm() {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+                Email
               </label>
               <div className="mt-1">
                 <input
@@ -115,8 +115,9 @@ export default function LoginForm() {
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="px-2 bg-white text-gray-500">
-                  Don&apos;t have an account?
-                  <a href="/register" className="font-medium text-green-600 hover:text-green-500">Register</a>
+                  <Link className="text-sm mt-3 text-right" href={"/register"}>
+                    Don&apos;t have an account? <span className="underline">Register</span>
+                  </Link>
                 </span>
               </div>
             </div>

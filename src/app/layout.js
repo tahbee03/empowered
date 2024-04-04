@@ -6,7 +6,7 @@ import Navbar from "../components/Navbar"
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'Empowered',
+  title: 'EmpowerEd',
   description: 'Senior design project about ai resumebuilder',
 }
 
