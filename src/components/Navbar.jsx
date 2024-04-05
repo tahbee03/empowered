@@ -11,6 +11,11 @@ const Navbar = () => {
   const { data: session } = useSession();
   const handleNav = () => setNav(!nav);
 
+  async function handleSignOut() {
+    const res = await signOut();
+    window.location.href = "/";
+  }
+
   return (
     <div className="flex justify-between items-center h-24 max-w-[1240px] mx-auto px-4 dark:bg-dark">
       <div className="flex items-center">
@@ -25,16 +30,16 @@ const Navbar = () => {
       </div>
       {/* Desktop Menu */}
       <div className="hidden md:flex items-center">
-        <a href="#" className="text-black dark:text-white hover:text-[#501616] dark:hover:text-[#CCA677] mx-2">About</a>
+        <a href="/about" className="text-black dark:text-white hover:text-[#501616] dark:hover:text-[#CCA677] mx-2">About</a>
         <p className="text-black dark:text-white">|</p>
-        <a href="#" className="text-black dark:text-white hover:text-[#501616] dark:hover:text-[#CCA677] mx-2">Tutorials</a>
+        <a href="/tutorials" className="text-black dark:text-white hover:text-[#501616] dark:hover:text-[#CCA677] mx-2">Tutorials</a>
         {session ? (
           <>
             <p className="text-black dark:text-white">|</p>
             <Link href={"/resume"} className="text-black dark:text-white hover:text-[#501616] dark:hover:text-[#CCA677] mx-2">Resume Builder</Link>
-            <span className="mr-4 font-bold text-[#501616] dark:text-[#CCA677]">Welcome, {session.user.name}</span>
+            <Link href={"/profile"} className="mr-4 font-bold text-[#501616] dark:text-[#CCA677]">Welcome, {session.user.name}</Link>
             <Link href={"/"}>
-              <button onClick={() => signOut()} className="text-[#501616] dark:text-[#CCA677] border border-[#501616] dark:border-[#CCA677] hover:bg-[#501616] dark:hover:bg-[#CCA677] hover:text-white dark:hover:text-black px-4 py-2 rounded-full my-2 w-full">
+              <button onClick={handleSignOut} className="text-[#501616] dark:text-[#CCA677] border border-[#501616] dark:border-[#CCA677] hover:bg-[#501616] dark:hover:bg-[#CCA677] hover:text-white dark:hover:text-black px-4 py-2 rounded-full my-2 w-full">
                 Logout
               </button>
             </Link>
