@@ -1,7 +1,7 @@
 "use client"
 import React, { useState,useEffect } from 'react';
 import ResumePage from '../resume/page';
-import Chat from "../../components/ui/chat"
+
 const FinalResumePage = () => {
   const [resume, setResume] = useState(null);
 
@@ -201,10 +201,7 @@ const FinalResumePage = () => {
     </button>
   </div>
 
-  {/* Assuming Chat is another component */}
-  <div style={{ width: '600px', height: '800px' }}>
-  <Chat />
-</div>
+
 
 </div>
   
