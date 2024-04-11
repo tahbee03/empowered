@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useChat } from 'ai/react'
-import { useEffect, useRef,useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Input } from '../../components/ui/input'
 import { Button } from '../../components/ui/button'
 import { ScrollArea } from '../../components/ui/scroll-area'
@@ -13,11 +13,14 @@ import FinalResumePage from '../finalresume/page'
 import { useRouter } from 'next/navigation'
 export default function Page() {
   const [fontSize, setFontSize] = useState(16);
-  // Function to increase font size
- const increaseFontSize = () => setFontSize(fontSize + 1);
+  const [fontMax, setFontMax] = useState(false); // Triggers font maximum size (6)
+  const [fontMin, setFontMin] = useState(false); // Triggers font minimum size (24)
 
- // Function to decrease font size
- const decreaseFontSize = () => setFontSize(fontSize - 1);
+  // Function to increase font size
+  const increaseFontSize = () => setFontSize(fontSize + 2);
+
+  // Function to decrease font size
+  const decreaseFontSize = () => setFontSize(fontSize - 2);
   const [finalResumeText, setFinalResumeText] = useState(''); // State to store the final resume text
   const router = useRouter()
   const [resumeData, setResumeData] = useState(null); // State to store the parsed resume data
@@ -26,12 +29,12 @@ export default function Page() {
   const [speechRecognition, setSpeechRecognition] = useState(null); // Will hold our speech recognition instance
   const ref = useRef(null)
   const { messages, input, handleInputChange, handleSubmit, isLoading, error } =
-  useChat({
-    initialMessages: [
-      {
-        id: Date.now().toString(),
-        role: 'assistant',
-        content: `I Want you to ask resume questions in this order in this form of an example object exactly with their information filled in
+    useChat({
+      initialMessages: [
+        {
+          id: Date.now().toString(),
+          role: 'assistant',
+          content: `I Want you to ask resume questions in this order in this form of an example object exactly with their information filled in
         let resume = {
           name: "",
           phone: "",
@@ -58,20 +61,20 @@ export default function Page() {
        
         
         `
-      },
-     
-     
-    ]
-  });
-   
- 
+        },
+
+
+      ]
+    });
+
+
   const isFinalResponse = (response) => {
     // Define keywords or phrases that likely indicate the final response
-    const indicators = ["Here is", "completed", ];
+    const indicators = ["Here is", "completed",];
     return indicators.some(indicator => response.includes(indicator));
   };
   useEffect(() => {
-   
+
     const latestMessage = messages[messages.length - 1];
     if (latestMessage && latestMessage.role === 'assistant' && isFinalResponse(latestMessage.content)) {
       // Extract the resume text for parsing
@@ -79,7 +82,7 @@ export default function Page() {
       // Here, you would call a function to safely parse `finalResumeText` into an object
       // and then update `resumeData` state with it.
       // This step is not shown here due to the complexity and security implications of parsing.
-      
+
     }
     if (latestMessage && latestMessage.role === 'user' && ttsEnabled) {
       speakText(latestMessage.content); // Speak out the user's message if TTS is enabled
@@ -108,7 +111,7 @@ export default function Page() {
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
         handleInputChange({ target: { value: transcript } }); // Update input with the transcript
-        handleSubmit({ preventDefault: () => {} }); // Send message
+        handleSubmit({ preventDefault: () => { } }); // Send message
         setIsListening(false); // Stop listening after receiving result
       };
       recognition.onend = () => {
@@ -145,9 +148,9 @@ export default function Page() {
           work_experience: [],
           skills: []
         };
-  
+
         let currentWorkExperience = null; // Temporary variable to keep track of the current work experience
-  
+
         const lines = finalResumeText.split('\n');
         lines.forEach(line => {
           if (line.includes('name:')) {
@@ -186,7 +189,7 @@ export default function Page() {
             // After setting the end date, push the work experience object to the array
             resume.work_experience.push(currentWorkExperience);
             currentWorkExperience = null; // Reset for the next work experience block
-          } 
+          }
           else if (line.includes('skills:')) {
             resume.skills = line.split('[')[1].split(']')[0].split(',').map(skill => skill.trim().replace(/['"]+/g, ''));
           }
@@ -196,26 +199,47 @@ export default function Page() {
 
         setTimeout(() => {
           // After a 3000ms delay, navigate to the /finalresume page
-          <loading/>
+          <loading />
           router.push('/finalresume');
         }, 3000); // 3000 milliseconds delay for "Generating resume..."
         console.log(resume)
-    
-      
       } catch (error) {
         console.error("Error parsing resume data:", error);
       }
     }
   }, [finalResumeText]);
-  
+
+  // Auto-scroll to bottom when new messages appear
+  useEffect(() => {
+    const scrollArea = document.getElementById("scroll-area");
+    scrollArea.scrollTop = scrollArea.scrollHeight;
+  }, [messages]);
+
+  // Set states when font max and min are reached to disable buttons
+  useEffect(() => {
+    setFontMax(fontSize >= 24);
+    setFontMin(fontSize <= 6);
+  }, [fontSize]);
 
   return (
-    <section className='text-zinc-700' style={{ fontSize: `${fontSize}px` }}>
+    <section className='text-zinc-700'>
       <div className='container flex h-screen flex-col items-center justify-center'>
-        <h1 className='font-serif text-2xl font-medium'>AI Chatbot</h1>
+        <h1 className='text-2xl font-bold text-black dark:text-white'>AI Chatbot</h1>
         <div className=''>
-          <button className='mr-4' onClick={increaseFontSize}>Increase Font Size</button>
-          <button onClick={decreaseFontSize}>Decrease Font Size</button>
+          <button
+            className='m-2 text-[#501616] dark:text-[#CCA677] disabled:text-slate-500 dark:disabled:text-slate-500'
+            onClick={increaseFontSize}
+            disabled={fontMax}
+          >
+            Increase Font Size
+          </button>
+          <button
+            className='m-2 text-[#501616] dark:text-[#CCA677] disabled:text-slate-500 dark:disabled:text-slate-500'
+            onClick={decreaseFontSize}
+            disabled={fontMin}
+          >
+            Decrease Font Size
+          </button>
         </div>
         <Button onClick={startListening} disabled={isListening}>
           {isListening ? 'Listening...' : 'Speak'}
@@ -234,31 +258,33 @@ export default function Page() {
                   <div className='mb-6 flex gap-3'>
                     <Avatar>
                       <AvatarImage src='' />
-                      <AvatarFallback className='text-sm'>U</AvatarFallback>
+                      <AvatarFallback className='text-black dark:text-white'>
+                        U
+                      </AvatarFallback>
                     </Avatar>
                     <div className='mt-1.5'>
-                      <p className='font-semibold'>You</p>
-                      <div className='mt-1.5 text-sm text-zinc-500'>
+                      <p className='font-semibold text-black dark:text-white' style={{ fontSize: `${fontSize}px` }}>You</p>
+                      <div className='mt-1.5 text-sm text-black dark:text-white' style={{ fontSize: `${fontSize}px` }}>
                         {m.content}
                       </div>
                     </div>
                   </div>
                 )}
-  
+
                 {m.role === 'assistant' && (
                   <div className='mb-6 flex gap-3'>
                     <Avatar>
-                      <AvatarImage src='' />
-                      <AvatarFallback className='bg-emerald-500 text-white'>
+                      <AvatarImage src='/icon.png' />
+                      <AvatarFallback className='bg-emerald-500 text-black dark:text-white'>
                         AI
                       </AvatarFallback>
                     </Avatar>
                     <div className='mt-1.5 w-full'>
                       <div className='flex justify-between'>
-                        <p className='font-semibold'>Bot</p>
+                        <p className='font-semibold text-black dark:text-white' style={{ fontSize: `${fontSize}px` }}>Bot</p>
                         <CopyToClipboard message={m} className='-mt-1' />
                       </div>
-                      <div className='mt-2 text-sm text-zinc-500'>
+                      <div className='mt-2 text-sm text-black dark:text-white' style={{ fontSize: `${fontSize}px` }}>
                         {m.content.includes("What is your first and last name?") ?
                           "What is your first and last name?" : m.content}
                       </div>
@@ -268,13 +294,13 @@ export default function Page() {
               </div>
             ))}
           </ScrollArea>
-  
+
           <form onSubmit={handleSubmit} className='relative'>
             <Input
               value={input}
               onChange={handleInputChange}
               placeholder='Answer the questions ...'
-              className='pr-12 placeholder:italic placeholder:text-zinc-600/75 focus-visible:ring-zinc-500'
+              className='text-black dark:text-white pr-12 placeholder:italic placeholder:text-zinc-600/75 focus-visible:ring-zinc-500'
               style={{ fontSize: `${fontSize}px` }} // Ensure this applies if Input supports style prop
             />
             <Button
@@ -291,14 +317,4 @@ export default function Page() {
       </div>
     </section>
   );
-  
 }
-
-
- 
-
- 
-
- 
-
- 
