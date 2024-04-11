@@ -9,32 +9,27 @@ import { ScrollArea } from '../../components/ui/scroll-area'
 import CopyToClipboard from '../../components/copy-to-clipboard'
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar'
 import { SendHorizontalIcon } from 'lucide-react'
-import FinalResumePage from '../finalresume/page'
 import { useRouter } from 'next/navigation'
+
 export default function Page() {
   const [fontSize, setFontSize] = useState(16);
   const [fontMax, setFontMax] = useState(false); // Triggers font maximum size (6)
   const [fontMin, setFontMin] = useState(false); // Triggers font minimum size (24)
-
-  // Function to increase font size
-  const increaseFontSize = () => setFontSize(fontSize + 2);
-
-  // Function to decrease font size
-  const decreaseFontSize = () => setFontSize(fontSize - 2);
+  const increaseFontSize = () => setFontSize(fontSize + 2); // Function to increase font size
+  const decreaseFontSize = () => setFontSize(fontSize - 2); // Function to decrease font size
   const [finalResumeText, setFinalResumeText] = useState(''); // State to store the final resume text
-  const router = useRouter()
+  const router = useRouter();
   const [resumeData, setResumeData] = useState(null); // State to store the parsed resume data
   const [ttsEnabled, setTtsEnabled] = useState(false); // State to track TTS toggle
   const [isListening, setIsListening] = useState(false); // State to track if we're listening for speech
   const [speechRecognition, setSpeechRecognition] = useState(null); // Will hold our speech recognition instance
-  const ref = useRef(null)
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } =
-    useChat({
-      initialMessages: [
-        {
-          id: Date.now().toString(),
-          role: 'assistant',
-          content: `I Want you to ask resume questions in this order in this form of an example object exactly with their information filled in
+  const ref = useRef(null);
+  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
+    initialMessages: [
+      {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `I Want you to ask resume questions in this order in this form of an example object exactly with their information filled in
         let resume = {
           name: "",
           phone: "",
@@ -61,20 +56,19 @@ export default function Page() {
        
         
         `
-        },
+      },
 
 
-      ]
-    });
-
+    ]
+  });
 
   const isFinalResponse = (response) => {
     // Define keywords or phrases that likely indicate the final response
     const indicators = ["Here is", "completed",];
     return indicators.some(indicator => response.includes(indicator));
   };
-  useEffect(() => {
 
+  useEffect(() => {
     const latestMessage = messages[messages.length - 1];
     if (latestMessage && latestMessage.role === 'assistant' && isFinalResponse(latestMessage.content)) {
       // Extract the resume text for parsing
@@ -101,6 +95,7 @@ export default function Page() {
   const toggleTTS = () => {
     setTtsEnabled(!ttsEnabled);
   };
+
   useEffect(() => {
     // Initialize speech recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -202,7 +197,6 @@ export default function Page() {
           <loading />
           router.push('/finalresume');
         }, 3000); // 3000 milliseconds delay for "Generating resume..."
-        console.log(resume)
       } catch (error) {
         console.error("Error parsing resume data:", error);
       }
