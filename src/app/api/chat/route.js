@@ -10,7 +10,7 @@ const openai = new OpenAI({
  
  
 export async function POST(req) {
-    console.log('API Key:', process.env.OPENAI_API_KEY);
+    // console.log('API Key:', process.env.OPENAI_API_KEY);
     try{
         if(!process.env.OPENAI_API_KEY){
             return new NextResponse('Missing OpenAI API key.', {status: 400})
