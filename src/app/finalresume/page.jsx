@@ -1,6 +1,11 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import CloudConvert from 'cloudconvert';
+import fs from 'fs';
+import https from 'https';
+
+const cloudConvert = new CloudConvert('eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNTRkNmIzZDJkZTlkZjk0ZTAwZWQ4MDUyYzM0MDNkZDc2ZmYzNWJhMjQyY2M4ZDE4NGU3ZGRkZTc4YjU1YzdiYjQ4YjNlNTgxNDhlNWI4YzYiLCJpYXQiOjE3MTU0NTc4NDguODg5MDQ5LCJuYmYiOjE3MTU0NTc4NDguODg5MDUsImV4cCI6NDg3MTEzMTQ0OC44ODQyOCwic3ViIjoiNjgzMTgwNzEiLCJzY29wZXMiOlsidXNlci5yZWFkIiwidXNlci53cml0ZSIsInRhc2sucmVhZCIsInRhc2sud3JpdGUiLCJ3ZWJob29rLnJlYWQiLCJ3ZWJob29rLndyaXRlIiwicHJlc2V0LnJlYWQiLCJwcmVzZXQud3JpdGUiXX0.NMlya_zszp2jZ9JqU4cL1ind7FWm0wA1sdrvQrcWoE5SsD4y6M2r_k5Nf6RU0ZRiRqYDkjDrmZGY28Jx-pGgk1qeV5lXuBgcuwl8sc7PBhafu76XAMq8dRdjtgHd1VDzRE8SYckIYDIrbh3y2tPuUMxhiYK6MROgkFBlx6eqNODHl5tJwZzyNixQlltDdCllPYis7lwhh445nUiHQ8a9v5cIvbbWMxEFO9fTSgQ3qnN2o0rDII1I2VoiKJali2P0f0ycDTx8sdEj8NzOhFkCC5sM23hUgYmkSkmK8WIjCQJ_pZ6bVAzfDHbTyv3QIOaRuDN4bwq7VYPfx4SMyiTO1OCbpMR-PmPzQ6-5_xJwbI8xl6SkoInJGRwEtxnQCQf8ndtCnb4JGNnhCRXAQq-s7-Lc0Bf9asKDi9SrnuVYR8uzmkd0qTufJkumbH4UJ6XRqdYTmeEn6_fZCnr5Z4i-UkOrVn8GOJd08cS8T0xkphJA4gQ69x-fJDU4U2Q6HLs3SxQIeWLQNYq_kFrQS8Yq-t5i0hGOpsFfxq2HfASffU_S4z0BzfC9UhGwgrVijAOhJp1rqquel6kKLDQ09GsfzYZ6rtKjzWiuSnhJpGdb4-vxP6mgFv1EhkdNvc-DK0upc_xQcBozwbIxtFUmVSIjZUyeUEA62o5yBsmoCptIF3E');
 
 const FinalResumePage = () => {
   const [resume, setResume] = useState(null);
@@ -169,7 +174,61 @@ const FinalResumePage = () => {
       console.log(error);
     }
   };
+  const convertToPDF = async () => {
+    try {
+      // Generate LaTeX content
+      const latex = generateLaTeX(resume);
+      // Create a temporary TeX file
+      //fs.writeFileSync('resume.tex', latex);
 
+      // Create the conversion job
+      const job = await cloudConvert.jobs.create({
+        tasks: {
+          'upload-my-file': {
+            operation: "import/raw",
+            file: latex,
+            filename: "resume.tex"
+          },
+          'convert-to-pdf': {
+            operation: 'convert',
+            input_format: 'tex',
+            output_format: 'pdf',
+            engine: 'texlive',
+            input: ['upload-my-file']
+          },
+          'export-1': {
+            operation: 'export/url',
+            input: ['convert-to-pdf']
+          }
+        },
+        tag: 'jobbuilder'
+      });
+
+      // Upload the TeX file
+      // const uploadTask = job.tasks.filter(task => task.name === 'upload-my-file')[0];
+      // const inputFile = fs.createReadStream('resume.tex');
+      // await cloudConvert.tasks.upload(uploadTask, inputFile, 'resume.tex');
+
+      // Wait for job completion
+      const completedJob = await cloudConvert.jobs.wait(job.id);
+
+      // Get export URLs
+      const file = cloudConvert.jobs.getExportUrls(completedJob)[0];
+
+      // Download the PDF file
+      const link = document.createElement('a');
+      link.href = file.url;
+      link.download = 'resume.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      console.log('Conversion to PDF completed successfully!');
+      setIsDownloaded(true);
+    } catch (error) {
+      console.error('Error converting to PDF:', error);
+    }
+  };
   return (
     <div className='flex flex-col lg:flex-row lg:justify-around gap-10 mx-10'>
 
@@ -231,7 +290,7 @@ const FinalResumePage = () => {
 
       <div className="flex-grow-0">
         <button
-          onClick={downloadLaTeX}
+          onClick={convertToPDF}
           className="p-2 border rounded text-lg bg-green-500 text-white hover:bg-green-600 disabled:bg-slate-500"
           disabled={isDownloaded}
         >

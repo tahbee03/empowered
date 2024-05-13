@@ -16,6 +16,7 @@
     "ai": "^2.2.36",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
+    "cloudconvert": "^2.3.7",
     "clsx": "^2.1.0",
     "lucide-react": "^0.335.0",
     "moment": "^2.30.1",
